@@ -1,0 +1,24 @@
+<launch>
+
+    <node pkg="turtlesim" name="turtlesim" type="turtlesim_node" >
+        <remap from="/turtle1" to="/robot1"/>
+	</node>
+	
+	<node pkg="rosservice" type="rosservice" name="turtle2" args="call --wait /spawn 0.0 0.0 0.0 robot2" />   
+	<node pkg="rosservice" type="rosservice" name="turtle3" args="call --wait /spawn 0.0 0.0 0.0 robot3" />  
+
+    <node pkg="convoy" name="convoy_node" type="convoy_node" output="screen" >
+        <param name="leader_pose" value="/robot1/pose" type="string" />
+        <param name="follower_pose" value="/robot2/pose" type="string" />
+        <param name="follower_speeds" value="/robot2/cmd_vel" type="string"/>
+	</node>
+	
+    <node pkg="convoy" name="convoy2_node" type="convoy_node" output="screen" >
+        <param name="leader_pose" value="/robot2/pose" type="string" />
+        <param name="follower_pose" value="/robot3/pose" type="string" />
+        <param name="follower_speeds" value="/robot3/cmd_vel" type="string"/>
+	</node>
+	
+</launch>
+
+
