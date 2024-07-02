@@ -10,9 +10,9 @@ using namespace ros;
 using namespace turtlesim;
 
 
-float Kp_lv = ; //Valor de Kp (control proporcional) para velocidad lineal. Probar valores
-float Kp_av = ; //Valor de Kp (control proporcional) para velocidad angular. Probar valores
-float distance_tolerance = 1.5; //Se pueden probar otras distancias de seguridad
+float Kp_lv = 0.3;
+float Kp_av = 1.35;
+float distance_tolerance = 1.5;
 
 class Convoy {
 public:
@@ -46,26 +46,26 @@ Convoy::Convoy(){
     ros::param::get("~follower_speeds", follower_speeds);
 
     Robot_Leader_Sub = Listener.subscribe(leader_pose, 10, &Convoy::Robot_Leader_PoseUpdate, this);
-    Robot_Follower_Sub = //Suscribir a topic que publica la pose del robot follower
+    Robot_Follower_Sub = Listener.subscribe(follower_pose, 10, &Convoy::Robot_Follower_PoseUpdate, this);
     Robot_Follower_Command = CommanderNode.advertise<geometry_msgs::Twist>(follower_speeds, 10);
 }
 
 void Convoy::Robot_Leader_PoseUpdate(const turtlesim::Pose::ConstPtr& msg)
 {
-    
-    //De igual forma que en la callback Robot_Follower_PoseUpdate, actualizar la pose de Robot_Leader_Pose (en esta callback, obviamente, no se llama a trackLeader()
-    
+    Robot_Leader_Pose.x = msg->x;
+    Robot_Leader_Pose.y = msg->y;
+    Robot_Leader_Pose.linear_velocity = msg->linear_velocity;
+    Robot_Leader_Pose.angular_velocity = msg->angular_velocity;
+    Robot_Leader_Pose.theta = msg->theta;
 }
 
 void Convoy::Robot_Follower_PoseUpdate(const turtlesim::Pose::ConstPtr& msg)
 {
-    //Actualizar la pose del robot follower con los valores contenidos en el mensaje msg recibido en el topic
-
-    Robot_Follower_Pose.x = 
-    Robot_Follower_Pose.y = 
-    Robot_Follower_Pose.linear_velocity =
-    Robot_Follower_Pose.angular_velocity = 
-    Robot_Follower_Pose.theta = 
+    Robot_Follower_Pose.x = msg->x;
+    Robot_Follower_Pose.y = msg->y;
+    Robot_Follower_Pose.linear_velocity = msg->linear_velocity;
+    Robot_Follower_Pose.angular_velocity = msg->angular_velocity;
+    Robot_Follower_Pose.theta = msg->theta;
 
     trackLeader();
 }
@@ -85,19 +85,19 @@ void Convoy::trackLeader(){
 }
 
 float Convoy::euclidean_distance(){
-    //Calcular distancia euclídea
+    return sqrt(pow(Robot_Leader_Pose.x - Robot_Follower_Pose.x, 2) + pow(Robot_Leader_Pose.y - Robot_Follower_Pose.y, 2));
 }
 
 float Convoy::linear_vel(){
-    //Implementar controlador de la velocidad lineal teniendo en cuenta el error de posición (distancia euclídea)
+    return Kp_lv * euclidean_distance();
 }
 
 float Convoy::steering_angle(){
-    //Calcular orientación deseada
+    return atan2((Robot_Leader_Pose.y - Robot_Follower_Pose.y),(Robot_Leader_Pose.x - Robot_Follower_Pose.x));
 }
 
 float Convoy::angle_vel(){
-    //Implementar controlador de la velocidad angular teniendo en cuenta el error de orientación
+    return Kp_av * (steering_angle() - Robot_Follower_Pose.theta);
 }
 
 
