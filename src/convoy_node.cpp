@@ -61,11 +61,13 @@ void Convoy::Robot_Leader_PoseUpdate(const turtlesim::Pose::ConstPtr& msg)
 
 void Convoy::Robot_Follower_PoseUpdate(const turtlesim::Pose::ConstPtr& msg)
 {
-    Robot_Follower_Pose.x = msg->x;
-    Robot_Follower_Pose.y = msg->y;
-    Robot_Follower_Pose.linear_velocity = msg->linear_velocity;
-    Robot_Follower_Pose.angular_velocity = msg->angular_velocity;
-    Robot_Follower_Pose.theta = msg->theta;
+    //Actualizar la pose del robot follower con los valores contenidos en el mensaje msg recibido en el topic
+    
+    Robot_Follower_Pose.x = 
+    Robot_Follower_Pose.y = 
+    Robot_Follower_Pose.linear_velocity = 
+    Robot_Follower_Pose.angular_velocity = 
+    Robot_Follower_Pose.theta = 
 
     trackLeader();
 }
@@ -89,15 +91,15 @@ float Convoy::euclidean_distance(){
 }
 
 float Convoy::linear_vel(){
-    return Kp_lv * euclidean_distance();
+    return XXXX;
 }
 
 float Convoy::steering_angle(){
-    return atan2((Robot_Leader_Pose.y - Robot_Follower_Pose.y),(Robot_Leader_Pose.x - Robot_Follower_Pose.x));
+    return XXXX;
 }
 
 float Convoy::angle_vel(){
-    return Kp_av * (steering_angle() - Robot_Follower_Pose.theta);
+    return XXXX;
 }
 
 
